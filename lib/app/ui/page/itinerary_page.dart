@@ -23,7 +23,7 @@ class ItineraryPage extends StatelessWidget {
               const SizedBox(height: 10),
               // Bloque Encabezado
               Align(
-                alignment: Alignment.center, // Asegura que el texto esté alineado a la izquierda
+                alignment: Alignment.center,
                 child: Text(
                   'Crea Nuevo Itinerario',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -71,7 +71,7 @@ class ItineraryPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Card(
-                    elevation: 8.0, // Agrega un box shadow con una elevación de 8.0
+                    elevation: 8.0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16.0),
                     ),
@@ -82,18 +82,18 @@ class ItineraryPage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center, // Centra verticalmente
-                          crossAxisAlignment: CrossAxisAlignment.center, // Centra horizontalmente
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(Icons.map, color: Colors.black, size: 72.0), // Cambia el color del icono a negro
-                            Text('Mapa', style: TextStyle(color: Colors.black)), // Cambia el color del texto a negro
+                            Icon(Icons.map, color: Colors.black, size: 72.0),
+                            Text('Mapa', style: TextStyle(color: Colors.black)),
                           ],
                         ),
                       ),
                     ),
                   ),
                   Card(
-                    elevation: 8.0, // Agrega un box shadow con una elevación de 8.0
+                    elevation: 8.0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16.0),
                     ),
@@ -104,11 +104,11 @@ class ItineraryPage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center, // Centra verticalmente
-                          crossAxisAlignment: CrossAxisAlignment.center, // Centra horizontalmente
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(Icons.luggage_sharp, color: Colors.black, size: 72.0), // Cambia el color del icono a negro
-                            Text('Sitios Turísticos', style: TextStyle(color: Colors.black)), // Cambia el color del texto a negro
+                            Icon(Icons.luggage_sharp, color: Colors.black, size: 72.0),
+                            Text('Sitios Turísticos', style: TextStyle(color: Colors.black)),
                           ],
                         ),
                       ),
