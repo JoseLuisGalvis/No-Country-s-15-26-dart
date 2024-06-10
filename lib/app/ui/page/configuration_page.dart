@@ -6,24 +6,40 @@ import '../../provider/navigation_provider.dart';
 import '../components/custom_app_bar.dart';
 import 'home_page.dart';
 
-class ConfigurationPage extends StatelessWidget {
+import 'package:image_picker/image_picker.dart';
+import 'dart:ui' as ui;
+import 'dart:typed_data';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+
+class ConfigurationPage extends StatefulWidget {
+  ConfigurationPage({Key? key}) : super(key: key);
+
+  @override
+  _ConfigurationPageState createState() => _ConfigurationPageState();
+}
+
+class _ConfigurationPageState extends State<ConfigurationPage> {
   final List _navigationButtonProperties = [
     {
       "active_icon": Icons.home,
       "inactive_icon": Icons.home,
-      "label": "", // Etiqueta vacía
+      "label": "",
     },
     {
       "active_icon": Icons.add_card,
       "inactive_icon": Icons.add_card,
-      "label": "", // Etiqueta vacía
+      "label": "",
     },
     {
       "active_icon": Icons.person_2,
       "inactive_icon": Icons.person_2,
-      "label": "", // Etiqueta vacía
+      "label": "",
     },
   ];
+
+  Uint8List? _selectedImageBytes;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -45,33 +61,70 @@ class ConfigurationPage extends StatelessWidget {
                   fontWeight: FontWeight.bold
               ),
             ),
+            SizedBox(height: 10),
             // Foto
             Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.amber,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 7,
-                      offset: Offset(0, 3), // changes position of shadow
+              child: Column(
+                children: [
+                  if (_selectedImageBytes!= null)
+                    Container(
+                      width: 300,
+                      height: 250,
+                      decoration: BoxDecoration(
+
+                        boxShadow: [
+                          BoxShadow(
+                            offset: Offset(0, 5),
+                            blurRadius: 10,
+                            color: Colors.grey.withOpacity(0.8),
+                          ),
+                        ],
+                        color: Colors.amber,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      child: Image.memory(_selectedImageBytes!, fit: BoxFit.cover),
                     ),
-                  ],
-                ),
-                width: MediaQuery.of(context).size.width * 0.3,
-                height: MediaQuery.of(context).size.width * 0.3,
-                child: Center(
-                  child: Text(
-                    'Sube tu Foto',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  SizedBox(height: 18),
+                  ElevatedButton.icon(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Theme.of(context).colorScheme.primary),
+                    ),
+                    onPressed: () async {
+                      try {
+                        final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+                        if (pickedFile!= null) {
+                          _selectedImageBytes = await pickedFile.readAsBytes();
+                          setState(() {});
+                        } else {
+                          print('No se seleccionó ninguna imagen.');
+                        }
+                      } catch (e) {
+                        print('Error: $e');
+                      }
+
+                      if (_selectedImageBytes!= null) {
+                        await saveImageToFolder(context, _selectedImageBytes!);
+                      }
+                    },
+                    icon: Icon(Icons.image, color: Colors.white),
+                    label: Text(
+                      'Seleccionar Imagen',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        shadows: [
+                          Shadow(
+                            offset: Offset(0.5, 0.5),
+                            blurRadius: 1.0,
+                            color: Colors.grey.withOpacity(0.8),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
             SizedBox(height: 18),
@@ -82,8 +135,8 @@ class ConfigurationPage extends StatelessWidget {
             ),
             // Subtítulo Editar Perfil
             Center(
-             child: Row(
-               mainAxisAlignment: MainAxisAlignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('Editar Perfil'),
                   IconButton(
@@ -177,9 +230,9 @@ class ConfigurationPage extends StatelessWidget {
     return Consumer<NavigationProvider>(
       builder: (context, navigationProvider, child) {
         return Opacity(
-          opacity: 1, // Ajusta la opacidad aquí
+          opacity: 1,
           child: Container(
-            height: 75, // Ajusta la altura aquí
+            height: 75,
 
             decoration: const BoxDecoration(
               color: Color.fromARGB(255, 164, 244, 231),
@@ -190,13 +243,13 @@ class ConfigurationPage extends StatelessWidget {
             ),
             child: ClipRRect(
               child: BottomNavigationBar(
-                backgroundColor: Colors.transparent, // Hacer el fondo transparente para mostrar el color del contenedor
+                backgroundColor: Colors.transparent,
                 currentIndex: navigationProvider.currentIndex,
                 onTap: (value) {
                   navigationProvider.setIndex(value);
                 },
-                showSelectedLabels: false, // Ocultar etiquetas seleccionadas
-                showUnselectedLabels: false, // Ocultar etiquetas no seleccionadas
+                showSelectedLabels: false,
+                showUnselectedLabels: false,
                 items: List.generate(3, (index) {
                   var navBtnProperty = _navigationButtonProperties[index];
                   return BottomNavigationBarItem(
@@ -206,13 +259,13 @@ class ConfigurationPage extends StatelessWidget {
                       decoration: navigationProvider.currentIndex == index
                           ? BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.teal, // Color de fondo del círculo activo
+                        color: Colors.teal,
                         border: Border.all(
-                          color: Colors.white, // Color del borde blanco
-                          width: 2.0, // Ancho del borde
+                          color: Colors.white,
+                          width: 2.0,
                         ),
                       )
-                          : null, // Sin decoración para el ícono inactivo
+                          : null,
                       child: Icon(
                         navigationProvider.currentIndex == index
                             ? navBtnProperty["active_icon"]
@@ -223,7 +276,7 @@ class ConfigurationPage extends StatelessWidget {
                             : Colors.black,
                       ),
                     ),
-                    label: navBtnProperty["label"], // Etiqueta vacía
+                    label: navBtnProperty["label"],
                   );
                 }),
               ),
@@ -232,6 +285,16 @@ class ConfigurationPage extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> saveImageToFolder(BuildContext context, Uint8List imageBytes) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final String newPath = '${directory.path}/my_folder/image.jpg';
+
+    final file = File(newPath);
+    await file.writeAsBytes(imageBytes);
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Imagen guardada en $newPath')));
   }
 
 }
