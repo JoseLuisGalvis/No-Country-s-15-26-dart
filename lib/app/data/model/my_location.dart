@@ -30,7 +30,7 @@ class MyLocations {
     ),
     Location(
       id:6,
-      name: 'Puerto Madeero',
+      name: 'Puerto Madero',
       image: 'assets/monumentos/Madero.jpg',
     ),
     Location(

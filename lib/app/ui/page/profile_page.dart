@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:turistear_aplication_v1/app/ui/components/custom_app_bar.dart';
+
+import '../../data/model/image_model.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -27,6 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final Brightness brightness = Theme.of(context).brightness;
+    var imageModel = Provider.of<ImageModel>(context);
 
     return Scaffold(
       appBar: CustomAppBar(title: 'TuristAPP'),
@@ -62,7 +66,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 width: MediaQuery.of(context).size.width * 0.3,
                 height: MediaQuery.of(context).size.width * 0.3,
                 child: Center(
-                  child: Text(
+                  child: imageModel.imageBytes!= null // Verifica si hay una imagen cargada
+                      ? Image.memory(imageModel.imageBytes!, fit: BoxFit.cover) // Muestra la imagen
+                      : Text(
                     'Sube tu Foto',
                     style: TextStyle(
                       color: Colors.black,

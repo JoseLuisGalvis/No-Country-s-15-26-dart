@@ -7,6 +7,8 @@ import 'package:turistear_aplication_v1/app/provider/theme_provider.dart';
 import 'package:turistear_aplication_v1/app/ui/dashboard_of_fragments.dart';
 import 'package:turistear_aplication_v1/app/values/theme_app.dart';
 
+import 'app/data/model/image_model.dart';
+
 void main() {
   DioInstance.configureDio();
   runApp(
@@ -28,21 +30,24 @@ class MyApp extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return ScreenUtilInit(
-      designSize: const Size(360, 690), // Ajusta según tu diseño
+      designSize: const Size(360, 690),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
-          title: 'Flutter Demo',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: themeProvider.themeMode,
-          // Establece DashboardOfFragments como la página inicial
-          home: DashboardOfFragments(),
+        return ChangeNotifierProvider(
+          create: (context) => ImageModel(),
+          child: MaterialApp(
+            title: 'Flutter Demo',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            // Establece DashboardOfFragments como la página inicial
+            home: DashboardOfFragments(),
+          ),
         );
       },
-      child: DashboardOfFragments(),
     );
   }
 }
+

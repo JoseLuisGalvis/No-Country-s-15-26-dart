@@ -76,6 +76,7 @@ flutter:
     - assets/parques/
     - assets/reservas/
     - assets/gastronomia/
+    - assets/home/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

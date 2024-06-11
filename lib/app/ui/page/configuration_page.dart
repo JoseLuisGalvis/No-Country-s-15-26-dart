@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:turistear_aplication_v1/app/ui/page/profile_page.dart';
 
+import '../../data/model/image_model.dart';
 import '../../provider/navigation_provider.dart';
 import '../components/custom_app_bar.dart';
 import 'home_page.dart';
@@ -66,24 +67,24 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
             Center(
               child: Column(
                 children: [
-                  if (_selectedImageBytes!= null)
-                    Container(
-                      width: 300,
-                      height: 250,
-                      decoration: BoxDecoration(
-
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(0, 5),
-                            blurRadius: 10,
-                            color: Colors.grey.withOpacity(0.8),
-                          ),
-                        ],
-                        color: Colors.amber,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child: Image.memory(_selectedImageBytes!, fit: BoxFit.cover),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    height: MediaQuery.of(context).size.width * 0.3,
+                    decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      boxShadow: [
+                        BoxShadow(
+                          offset: Offset(0, 5),
+                          blurRadius: 10,
+                          color: Colors.grey.withOpacity(0.9),
+                        ),
+                      ],
                     ),
+                    child: _selectedImageBytes != null
+                        ? Image.memory(_selectedImageBytes!, fit: BoxFit.cover)
+                        : null,
+                  ),
                   SizedBox(height: 18),
                   ElevatedButton.icon(
                     style: ButtonStyle(
@@ -95,10 +96,12 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
 
                         if (pickedFile!= null) {
                           _selectedImageBytes = await pickedFile.readAsBytes();
+                          Provider.of<ImageModel>(context, listen: false).imageBytes = _selectedImageBytes; // Actualiza el modelo con la nueva imagen
                           setState(() {});
                         } else {
                           print('No se seleccionó ninguna imagen.');
                         }
+
                       } catch (e) {
                         print('Error: $e');
                       }
@@ -112,13 +115,13 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                       'Seleccionar Imagen',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         shadows: [
                           Shadow(
-                            offset: Offset(0.5, 0.5),
-                            blurRadius: 1.0,
-                            color: Colors.grey.withOpacity(0.8),
+                            offset: Offset(0.7, 0.9),
+                            blurRadius: 2.0,
+                            color: Colors.grey.withOpacity(0.9),
                           ),
                         ],
                       ),
@@ -162,13 +165,13 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                     'Gracias por tu Visita',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       shadows: [
                         Shadow(
                           offset: Offset(0.7, 0.9),
                           blurRadius: 2.0,
-                          color: Colors.grey.withOpacity(0.8),
+                          color: Colors.grey.withOpacity(0.9),
                         ),
                       ],
                     ),
@@ -196,13 +199,13 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                         child: Text('Cerrar Sesión',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             shadows: [
                               Shadow(
-                                offset: Offset(0.5, 0.5),
-                                blurRadius: 1.0,
-                                color: Colors.grey.withOpacity(0.8),
+                                offset: Offset(0.7, 0.9),
+                                blurRadius: 2.0,
+                                color: Colors.grey.withOpacity(0.9),
                               ),
                             ],
                           ),

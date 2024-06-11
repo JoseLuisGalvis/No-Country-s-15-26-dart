@@ -1,29 +1,24 @@
-import 'package:turistear_aplication_v1/app/data/model/favorites_sites.dart';
 
 class Itinerary {
   int? id;
   String nameItinerary;
-  String descItinerary;
+  final List<String> names;
 
-
-  Itinerary(this.nameItinerary, this.descItinerary);
+  Itinerary({required this.nameItinerary, this.names = const []});
 
   factory Itinerary.fromJson(Map<String, dynamic> json) => Itinerary(
-    json["name_itinerary"],
-    json["desc_itinerary"]
-
+    nameItinerary: json["name_itinerary"],
+    names: json["names"].cast<String>(),
   );
 
   Map<String, dynamic> toJson() => {
     'id': id?.toString(),
     'name_itinerary': nameItinerary,
-    'desc_itinerary': descItinerary,
-
+    'names': names,
   };
 
   // Getters
   String get name => nameItinerary;
-  String get description => descItinerary;
 }
 
 

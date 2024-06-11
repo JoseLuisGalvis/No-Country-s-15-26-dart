@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+
 import 'package:turistear_aplication_v1/app/api_connection/dio_instance.dart';
 import 'package:turistear_aplication_v1/app/data/model/itenerary.dart';
 import 'package:turistear_aplication_v1/app/ui/components/custom_app_bar.dart';
@@ -11,8 +9,121 @@ import 'package:turistear_aplication_v1/app/ui/components/form_nombre.dart';
 
 import '../../provider/navigation_provider.dart';
 
-class AddItineraryPage extends StatelessWidget {
-  AddItineraryPage({super.key});
+
+class AddItineraryPage extends StatefulWidget {
+  @override
+  _AddItineraryPageState createState() => _AddItineraryPageState();
+}
+
+class _AddItineraryPageState extends State<AddItineraryPage> {
+  final List<String> _names = [];
+  int _userId = 1;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  void _addNameField(String name) {
+    setState(() {
+      _names.add(name);
+    });
+  }
+
+  void _removeNameField(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Eliminar nombre'),
+          content: Text('¿Estás seguro de que quieres eliminar este nombre?'),
+          actions: [
+            TextButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Sí'),
+              onPressed: () {
+                setState(() {
+                  _names.removeAt(index);
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _saveItinerary() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmar Registro'),
+          content: Text('¿Estás seguro de que quieres registrar este itinerario?'),
+          actions: [
+            TextButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Sí'),
+              onPressed: () async {
+                // Enviar la lista de nombres al servidor para registrar el itinerario
+                final response = await DioInstance.post(
+                  'http://localhost:2100/itineraries',
+                  data: json.encode({'names': _names, 'user_id': _userId}), // Use _userId instead of userId
+                );
+
+                if (response.statusCode == 200) {
+                  // Itinerario guardado correctamente
+                  String successMessage = "Itinerario guardado correctamente.";
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(successMessage),
+                      duration: Duration(seconds: 6),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                  Navigator.of(context).pop();
+                } else {
+                  // Error al guardar el itinerario
+                  String errorMessage = "Hubo un problema al guardar el itinerario.";
+
+                  if (response.statusCode == 400) {
+                    errorMessage += "\nError 400: Solicitud incorrecta.";
+                  } else if (response.statusCode == 401) {
+                    errorMessage += "\nError 401: No autorizado.";
+                  } else if (response.statusCode == 403) {
+                    errorMessage += "\nError 403: Acceso denegado.";
+                  } else if (response.statusCode == 404) {
+                    errorMessage += "\nError 404: Recurso no encontrado.";
+                  } else if (response.statusCode! >= 500 && response.statusCode! < 600) {
+                    errorMessage += "\nError 5xx: Problema del servidor.";
+                  }
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(errorMessage),
+                      duration: Duration(seconds: 6),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   final List _navigationButtonProperties = [
     {
@@ -32,84 +143,79 @@ class AddItineraryPage extends StatelessWidget {
     },
   ];
 
-  Future<void> saveItinerary(String name, String description) async {
-    // Asume que quieres iniciar sin sitios favoritos
-    final Itinerary itinerary = Itinerary(name, description);
-
-    final response = await DioInstance.post(
-      'http://localhost:2100/itineraries',
-      data: json.encode(itinerary.toJson()),
-    );
-
-    if (response.statusCode == 200) {
-      if (kDebugMode) {
-        print('Itinerario guardado correctamente');
-      }
-    } else {
-      if (kDebugMode) {
-        print('Error al guardar el itinerario: ${response.data}');
-      }
-    }
-  }
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(title: 'TuristAPP'),
       body: SingleChildScrollView(
-
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 10),
-              // Bloque Encabezado
-              Align(
-                alignment: Alignment
-                    .center, // Asegura que el texto esté alineado a la izquierda
-                child: Text(
-                  'Crea Nuevo Itinerario',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontSize:
-                    16.sp, // Usa ScreenUtil para el tamaño del texto
+              //...
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.tertiary,
+                    width: 2,
                   ),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              ),
-              const SizedBox(height: 16),
-              // Bloque ItineraryList()
-              Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.yellow, width: 2),
-                    borderRadius: BorderRadius.circular(20)),
-                child: const ExpansionTile(
-                  title: Text("Sitios Agregados"),
-                  children: <Widget>[
-                    // Definir una altura máxima para el contenedor desplazable
-                    SizedBox(
-                      height: 200, // Ajusta la altura según sea necesario
-                      child: SingleChildScrollView(
-                        child: ItineraryList(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Bloque FormNombre
-              Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                        color: Theme.of(context).colorScheme.tertiary,
-                        width: 2),
-                    borderRadius: BorderRadius.circular(8)),
                 width: MediaQuery.of(context).size.width,
                 child: FormNombre(
-                  onSave: (name, description) {
-                    saveItinerary(name, description); // Ahora pasa ambos, nombre y descripción
-                  },
+                  onAddName: _addNameField,
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Itinerario
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.yellow, width: 2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ExpansionTile(
+                  title: Text("Sitios Agregados"),
+                  children: <Widget>[
+                  // Definir una altura máxima para el contenedor desplazable
+                  SizedBox(
+                    height: 200,
+                    child: ListView.builder(
+                      itemCount: _names.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(_names[index]),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              _removeNameField(index);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _saveItinerary,
+                child: Text('Guardar',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        offset: Offset(0.5, 0.5),
+                        blurRadius: 1.0,
+                        color: Colors.grey.withOpacity(0.8),
+                      ),
+                    ],
+                  ),),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.primary),
+                  side: MaterialStateProperty.all(BorderSide(color: Colors.transparent)),
+                  shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 ),
               ),
             ],
@@ -214,7 +320,6 @@ class _ItineraryListState extends State<ItineraryList> {
             itemBuilder: (context, index) {
               return ListTile(
                 title: Text(itineraries[index].nameItinerary),
-                subtitle: Text(itineraries[index].descItinerary),
               );
             },
           );
